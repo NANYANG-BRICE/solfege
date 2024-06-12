@@ -16,6 +16,9 @@
 
         .lesson {
             text-align: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
         }
 
         .keyboard {
@@ -61,6 +64,34 @@
             font-weight: bold;
             pointer-events: none;
             z-index: 2;
+        }
+
+        .staff {
+            position: relative;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            height: 100px;
+            border: 1px solid #000;
+            background: linear-gradient(white 20%, transparent 20%) 0 0 / 100% 20px repeat;
+        }
+
+        .note {
+            position: absolute;
+            font-size: 2rem;
+        }
+
+        .note-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .note-info h2 {
+            margin-bottom: 10px;
+        }
+
+        .note-info p {
+            margin: 0;
         }
 
 
@@ -392,32 +423,43 @@
                                     <br>
                                     <br>
                                     <h1 class="text-center">Apprends les Notes de Musique</h1>
-                                    <div class="keyboard">
-                                        <div class="white-key" data-note="do">
-                                            <div class="note-text">Do</div>
-                                            <div class="black-key" data-note="do#"></div>
+                                    <div class="lesson">
+                                        <div class="keyboard" style="margin-left: auto; margin-right: auto;">
+                                            <div class="white-key" data-note="do">
+                                                <div class="note-text">Do</div>
+                                                <div class="black-key" data-note="do#"></div>
+                                            </div>
+                                            <div class="white-key" data-note="re">
+                                                <div class="note-text">Ré</div>
+                                                <div class="black-key" data-note="re#"></div>
+                                            </div>
+                                            <div class="white-key" data-note="mi">
+                                                <div class="note-text">Mi</div>
+                                            </div>
+                                            <div class="white-key" data-note="fa">
+                                                <div class="note-text">Fa</div>
+                                                <div class="black-key" data-note="fa#"></div>
+                                            </div>
+                                            <div class="white-key" data-note="sol">
+                                                <div class="note-text">Sol</div>
+                                                <div class="black-key" data-note="sol#"></div>
+                                            </div>
+                                            <div class="white-key" data-note="la">
+                                                <div class="note-text">La</div>
+                                                <div class="black-key" data-note="la#"></div>
+                                            </div>
+                                            <div class="white-key" data-note="si">
+                                                <div class="note-text">Si</div>
+                                            </div>
                                         </div>
-                                        <div class="white-key" data-note="re">
-                                            <div class="note-text">Ré</div>
-                                            <div class="black-key" data-note="re#"></div>
-                                        </div>
-                                        <div class="white-key" data-note="mi">
-                                            <div class="note-text">Mi</div>
-                                        </div>
-                                        <div class="white-key" data-note="fa">
-                                            <div class="note-text">Fa</div>
-                                            <div class="black-key" data-note="fa#"></div>
-                                        </div>
-                                        <div class="white-key" data-note="sol">
-                                            <div class="note-text">Sol</div>
-                                            <div class="black-key" data-note="sol#"></div>
-                                        </div>
-                                        <div class="white-key" data-note="la">
-                                            <div class="note-text">La</div>
-                                            <div class="black-key" data-note="la#"></div>
-                                        </div>
-                                        <div class="white-key" data-note="si">
-                                            <div class="note-text">Si</div>
+                                        <div style="display: block; width: 500px;">
+                                            <div class="note-info" id="noteInfo">
+                                                <h2>Nom de la note</h2>
+                                                <p>Description de la note</p>
+                                            </div>
+                                            <div class="staff" id="staff" style="height: 160px;">
+                                                <!-- Les notes seront ajoutées ici -->
+                                            </div>
                                         </div>
                                     </div>
                                 </li>
@@ -580,28 +622,91 @@
     <script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
     <script type="text/javascript" src="js/isotope.pkgd.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const filterControls = document.querySelectorAll('.filter-controls a');
-            const contentList = document.querySelector('.content-list');
+        const notePositions = {
+            'do': 80,
+            'do#': 75,
+            're': 70,
+            're#': 65,
+            'mi': 60,
+            'fa': 55,
+            'fa#': 50,
+            'sol': 45,
+            'sol#': 40,
+            'la': 35,
+            'la#': 30,
+            'si': 25
+        };
 
-            filterControls.forEach(control => {
-                control.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    const sectionId = this.getAttribute('id').replace('-section', '');
-                    const activeContent = document.querySelector('.content-list > li:not([style*="none"])');
-                    const newContent = document.getElementById(`${sectionId}-content`);
+        const noteEmojis = {
+            'do': '🎶',
+            'do#': '♯',
+            're': '🎵',
+            're#': '♯',
+            'mi': '🎶',
+            'fa': '🎵',
+            'fa#': '♯',
+            'sol': '🎶',
+            'sol#': '♯',
+            'la': '🎵',
+            'la#': '♯',
+            'si': '🎶'
+        };
 
-                    if (activeContent) {
-                        activeContent.style.display = 'none';
-                    }
-                    newContent.style.display = 'block';
-                });
+        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+            key.addEventListener('click', () => {
+                const noteName = key.getAttribute('data-note');
+                new Audio(`audio/${noteName}.mp3`).play();
+                addNoteToStaff(noteName);
+                updateNoteInfo(noteName);
+                simulateAIResponse(noteName);
             });
-
-            // Afficher le contenu de la section "Apprentissage" par défaut
-            document.getElementById('cours-content').style.display = 'block';
         });
+
+        function updateNoteInfo(note) {
+            const noteInfo = document.getElementById('noteInfo');
+            const noteName = note.toUpperCase(); // Convertir en majuscule
+            const noteDescription = getAIResponse(note);
+            noteInfo.querySelector('h2').innerText = noteName;
+            noteInfo.querySelector('p').innerText = noteDescription;
+        }
+
+        function addNoteToStaff(note) {
+            const staff = document.getElementById('staff');
+            const noteElement = document.createElement('div');
+            noteElement.className = 'note';
+            noteElement.innerHTML = noteEmojis[note];
+            noteElement.style.bottom = notePositions[note] + 'px';
+            noteElement.style.left = (staff.children.length * 20) + 'px';
+            staff.appendChild(noteElement);
+        }
+
+        function simulateAIResponse(selectedNote) {
+            // Simulation d'une réponse de l'IA
+            const aiResponse = getAIResponse(selectedNote);
+            setTimeout(() => {
+            }, 1000); // Délai de simulation d'une réponse
+        }
+
+        function getAIResponse(note) {
+            // Simulation simple de la réponse de l'IA
+            const responses = {
+                'do': "La touche Do est une note fondamentale très utilisée en musique.",
+                're': "C'est la seconde note de la gamme, après Do.",
+                'mi': "C'est la troisième note de la gamme, après Ré.",
+                'fa': "C'est la quatrième note de la gamme, après Mi.",
+                'sol': "C'est une note souvent utilisée comme tonique.",
+                'la': "C'est une note harmonique dans de nombreux accords.",
+                'si': "C'est une note souvent utilisée pour compléter une tonalité.",
+                'do#': "Do dièse (ou Ré bémol) est la même touche qu'une touche noire sur un piano.",
+                're#': "Ré dièse (ou Mi bémol) est une autre touche noire sur un piano.",
+                'fa#': "Fa dièse (ou Sol bémol) est une note modifiée souvent utilisée pour changer de tonalité.",
+                'sol#': "Sol dièse (ou La bémol) est une note modifiée qui complète souvent une progression musicale.",
+                'la#': "La dièse (ou Si bémol) est une note modifiée utilisée pour enrichir l'harmonie musicale."
+            };
+            return responses[note] || "Je ne suis pas sûr de cette note...";
+        }
     </script>
 
     <script>
@@ -616,25 +721,18 @@
         function simulateAIResponse(selectedNote) {
             // Simulation d'une réponse de l'IA
             const aiResponse = getAIResponse(selectedNote);
-            setTimeout(() => {
-                Swal.fire({
-                    title: 'Touche Sélectionnée!',
-                    html: `${aiResponse}`,
-                    confirmButtonText: 'Continuer'
-                });
-            }, 1000);
         }
 
         function getAIResponse(note) {
             // Simulation simple de la réponse de l'IA
             const responses = {
-                'do': "La touche <b>Do</b> est une note fondamentale très utilisée en musique.",
-                're': "La touche <b>Ré</b> C'est la seconde note de la gamme, après la touche <b>Do</b>.",
-                'mi': "La touche <b>Mi</b> C'est la troisième note de la gamme, après la touche <b>Ré</b>.",
-                'fa': "La touche <b>Fa</b> C'est la quatrième note de la gamme, après la touche <b>Mi</b>.",
-                'sol': "La touche <b>Sol</b> C'est une note souvent utilisée comme tonique.",
-                'la': "La touche <b>La</b> C'est une note harmonique dans de nombreux accords.",
-                'si': "La touche <b>Si</b> C'est une note souvent utilisée pour compléter une tonalité.",
+                'do': "La touche Do est une note fondamentale très utilisée en musique.",
+                're': "La touche Ré C'est la seconde note de la gamme, après la touche Do.",
+                'mi': "La touche Mi C'est la troisième note de la gamme, après la touche Ré.",
+                'fa': "La touche Fa C'est la quatrième note de la gamme, après la touche Mi.",
+                'sol': "La touche Sol C'est une note souvent utilisée comme tonique.",
+                'la': "La touche La C'est une note harmonique dans de nombreux accords.",
+                'si': "La touche Si C'est une note souvent utilisée pour compléter une tonalité.",
             };
             return responses[note] || "Je ne suis pas sûr de cette note...";
         }
@@ -843,7 +941,7 @@
                     elapsedTime: elapsedTime
                 };
                 const game = {
-                    pourcent : successRate.toFixed(2)
+                    pourcent: successRate.toFixed(2)
                 }
                 gamesHistory.push(gameInfo);
                 gamesPourcent.push(game)

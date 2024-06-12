@@ -17,6 +17,9 @@
 
         .lesson {
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .keyboard {
@@ -63,56 +66,144 @@
             pointer-events: none;
             z-index: 2;
         }
+
+        .staff {
+            position: relative;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            height: 100px;
+            border: 1px solid #000;
+            background: linear-gradient(white 20%, transparent 20%) 0 0 / 100% 20px repeat;
+        }
+
+        .note {
+            position: absolute;
+            font-size: 2rem;
+        }
+
+        .note-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .note-info h2 {
+            margin-bottom: 10px;
+        }
+
+        .note-info p {
+            margin: 0;
+        }
     </style>
 </head>
 
 <body>
-    <div class="lesson">
-        <h1>Apprends les Notes de Musique</h1>
-        <div class="keyboard">
-            <div class="white-key" data-note="do">
-                <div class="note-text">Do</div>
-                <div class="black-key" data-note="do#"></div>
+    <center>
+        <h1 class="text-center">Apprends les Notes de Musique</h1>
+        <div class="lesson">
+            <div class="keyboard" style="margin-left: auto; margin-right: auto;">
+                <div class="white-key" data-note="do">
+                    <div class="note-text">Do</div>
+                    <div class="black-key" data-note="do#"></div>
+                </div>
+                <div class="white-key" data-note="re">
+                    <div class="note-text">Ré</div>
+                    <div class="black-key" data-note="re#"></div>
+                </div>
+                <div class="white-key" data-note="mi">
+                    <div class="note-text">Mi</div>
+                </div>
+                <div class="white-key" data-note="fa">
+                    <div class="note-text">Fa</div>
+                    <div class="black-key" data-note="fa#"></div>
+                </div>
+                <div class="white-key" data-note="sol">
+                    <div class="note-text">Sol</div>
+                    <div class="black-key" data-note="sol#"></div>
+                </div>
+                <div class="white-key" data-note="la">
+                    <div class="note-text">La</div>
+                    <div class="black-key" data-note="la#"></div>
+                </div>
+                <div class="white-key" data-note="si">
+                    <div class="note-text">Si</div>
+                </div>
             </div>
-            <div class="white-key" data-note="re">
-                <div class="note-text">Ré</div>
-                <div class="black-key" data-note="re#"></div>
-            </div>
-            <div class="white-key" data-note="mi">
-                <div class="note-text">Mi</div>
-            </div>
-            <div class="white-key" data-note="fa">
-                <div class="note-text">Fa</div>
-                <div class="black-key" data-note="fa#"></div>
-            </div>
-            <div class="white-key" data-note="sol">
-                <div class="note-text">Sol</div>
-                <div class="black-key" data-note="sol#"></div>
-            </div>
-            <div class="white-key" data-note="la">
-                <div class="note-text">La</div>
-                <div class="black-key" data-note="la#"></div>
-            </div>
-            <div class="white-key" data-note="si">
-                <div class="note-text">Si</div>
+            <div style="display: block; width: 500px;">
+                <div class="note-info" id="noteInfo">
+                    <h2>Nom de la note</h2>
+                    <p>Description de la note</p>
+                </div>
+                <div class="staff" id="staff" style="height: 160px;">
+                    <!-- Les notes seront ajoutées ici -->
+                </div>
             </div>
         </div>
-    </div>
 
+    </center>
     <script>
+        const notePositions = {
+            'do': 80,
+            'do#': 75,
+            're': 70,
+            're#': 65,
+            'mi': 60,
+            'fa': 55,
+            'fa#': 50,
+            'sol': 45,
+            'sol#': 40,
+            'la': 35,
+            'la#': 30,
+            'si': 25
+        };
+
+        const noteEmojis = {
+            'do': '🎶',
+            'do#': '♯',
+            're': '🎵',
+            're#': '♯',
+            'mi': '🎶',
+            'fa': '🎵',
+            'fa#': '♯',
+            'sol': '🎶',
+            'sol#': '♯',
+            'la': '🎵',
+            'la#': '♯',
+            'si': '🎶'
+        };
+
         document.querySelectorAll('.white-key, .black-key').forEach(key => {
             key.addEventListener('click', () => {
                 const noteName = key.getAttribute('data-note');
                 new Audio(`audio/${noteName}.mp3`).play();
+                addNoteToStaff(noteName);
+                updateNoteInfo(noteName);
                 simulateAIResponse(noteName);
             });
         });
+
+        function updateNoteInfo(note) {
+            const noteInfo = document.getElementById('noteInfo');
+            const noteName = note.toUpperCase(); // Convertir en majuscule
+            const noteDescription = getAIResponse(note);
+            noteInfo.querySelector('h2').innerText = noteName;
+            noteInfo.querySelector('p').innerText = noteDescription;
+        }
+
+        function addNoteToStaff(note) {
+            const staff = document.getElementById('staff');
+            const noteElement = document.createElement('div');
+            noteElement.className = 'note';
+            noteElement.innerHTML = noteEmojis[note];
+            noteElement.style.bottom = notePositions[note] + 'px';
+            noteElement.style.left = (staff.children.length * 20) + 'px';
+            staff.appendChild(noteElement);
+        }
 
         function simulateAIResponse(selectedNote) {
             // Simulation d'une réponse de l'IA
             const aiResponse = getAIResponse(selectedNote);
             setTimeout(() => {
-                alert(`L'IA répond : "${aiResponse}"`);
             }, 1000); // Délai de simulation d'une réponse
         }
 
