@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reconnaissance Auditive</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .exercise {
+            text-align: center;
+        }
+
+        .piano-keys {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .white-key {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80px;
+            height: 250px;
+            margin: 0 5px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .black-key {
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 0 0 3px 3px;
+            width: 50px;
+            height: 150px;
+            position: absolute;
+            top: 0;
+            left: calc(50% - 25px);
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .black-key:hover {
+            background-color: #666;
+        }
+
+        .note-text {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="exercise">
+        <h1>Reconnaissance Auditive</h1>
+        <button id="play-sequence">Jouer la Séquence</button>
+        <div class="piano-keys">
+            <div class="white-key" data-note="do">
+                <div class="note-text">Do</div>
+                <div class="black-key" data-note="do#"></div>
+            </div>
+            <div class="white-key" data-note="re">
+                <div class="note-text">Ré</div>
+                <div class="black-key" data-note="re#"></div>
+            </div>
+            <div class="white-key" data-note="mi">
+                <div class="note-text">Mi</div>
+            </div>
+            <div class="white-key" data-note="fa">
+                <div class="note-text">Fa</div>
+                <div class="black-key" data-note="fa#"></div>
+            </div>
+            <div class="white-key" data-note="sol">
+                <div class="note-text">Sol</div>
+                <div class="black-key" data-note="sol#"></div>
+            </div>
+            <div class="white-key" data-note="la">
+                <div class="note-text">La</div>
+                <div class="black-key" data-note="la#"></div>
+            </div>
+            <div class="white-key" data-note="si">
+                <div class="note-text">Si</div>
+            </div>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        const notes = ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
+        let sequence = [];
+
+        document.getElementById('play-sequence').addEventListener('click', () => {
+            generateSequence();
+            playSequence(sequence);
+        });
+
+        function generateSequence() {
+            sequence = [];
+            for (let i = 0; i < 3; i++) { // Génère une séquence de 3 notes
+                const randomIndex = Math.floor(Math.random() * notes.length);
+                sequence.push(notes[randomIndex]);
+            }
+        }
+
+        function playSequence(sequence) {
+            sequence.forEach((note, index) => {
+                setTimeout(() => {
+                    playNoteSound(note);
+                }, index * 1000);
+            });
+        }
+
+        function playNoteSound(note) {
+            new Audio(`audio/${note}.mp3`).play();
+        }
+
+        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+            key.addEventListener('click', () => {
+                const selectedNote = key.getAttribute('data-note');
+                playNoteSound(selectedNote);
+                checkAnswer(selectedNote);
+            });
+        });
+
+        function checkAnswer(selectedNote) {
+            if (selectedNote === sequence[0]) {
+                document.getElementById('feedback').innerText = "Correct!";
+                setTimeout(() => {
+                    document.getElementById('feedback').innerText = "";
+                    generateSequence();
+                    playSequence(sequence);
+                }, 2000); // Délai avant de jouer la nouvelle séquence
+            } else {
+                document.getElementById('feedback').innerText = "Incorrect, essaie encore!";
+            }
+        }
+    </script>
+</body>
+
+</html>

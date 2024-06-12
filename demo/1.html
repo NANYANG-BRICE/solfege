@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Apprends les Notes de Musique</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .lesson {
+            text-align: center;
+        }
+
+        .keyboard {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .white-key {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80px;
+            height: 250px;
+            margin: 0 5px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .black-key {
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 0 0 3px 3px;
+            width: 50px;
+            height: 150px;
+            position: absolute;
+            top: 0;
+            left: calc(50% - 25px);
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .black-key:hover {
+            background-color: #666;
+        }
+
+        .note-text {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lesson">
+        <h1>Apprends les Notes de Musique</h1>
+        <div class="keyboard">
+            <div class="white-key" data-note="do">
+                <div class="note-text">Do</div>
+                <div class="black-key" data-note="do#"></div>
+            </div>
+            <div class="white-key" data-note="re">
+                <div class="note-text">Ré</div>
+                <div class="black-key" data-note="re#"></div>
+            </div>
+            <div class="white-key" data-note="mi">
+                <div class="note-text">Mi</div>
+            </div>
+            <div class="white-key" data-note="fa">
+                <div class="note-text">Fa</div>
+                <div class="black-key" data-note="fa#"></div>
+            </div>
+            <div class="white-key" data-note="sol">
+                <div class="note-text">Sol</div>
+                <div class="black-key" data-note="sol#"></div>
+            </div>
+            <div class="white-key" data-note="la">
+                <div class="note-text">La</div>
+                <div class="black-key" data-note="la#"></div>
+            </div>
+            <div class="white-key" data-note="si">
+                <div class="note-text">Si</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+            key.addEventListener('click', () => {
+                const noteName = key.getAttribute('data-note');
+                new Audio(`audio/${noteName}.mp3`).play();
+                simulateAIResponse(noteName);
+            });
+        });
+
+        function simulateAIResponse(selectedNote) {
+            // Simulation d'une réponse de l'IA
+            const aiResponse = getAIResponse(selectedNote);
+            setTimeout(() => {
+                alert(`L'IA répond : "${aiResponse}"`);
+            }, 1000); // Délai de simulation d'une réponse
+        }
+
+        function getAIResponse(note) {
+            // Simulation simple de la réponse de l'IA
+            const responses = {
+                'do': "La touche Do est une note fondamentale très utilisée en musique.",
+                're': "C'est la seconde note de la gamme, après Do.",
+                'mi': "C'est la troisième note de la gamme, après Ré.",
+                'fa': "C'est la quatrième note de la gamme, après Mi.",
+                'sol': "C'est une note souvent utilisée comme tonique.",
+                'la': "C'est une note harmonique dans de nombreux accords.",
+                'si': "C'est une note souvent utilisée pour compléter une tonalité.",
+                'do#': "Do dièse (ou Ré bémol) est la même touche qu'une touche noire sur un piano.",
+                're#': "Ré dièse (ou Mi bémol) est une autre touche noire sur un piano.",
+                'fa#': "Fa dièse (ou Sol bémol) est une note modifiée souvent utilisée pour changer de tonalité.",
+                'sol#': "Sol dièse (ou La bémol) est une note modifiée qui complète souvent une progression musicale.",
+                'la#': "La dièse (ou Si bémol) est une note modifiée utilisée pour enrichir l'harmonie musicale."
+            };
+            return responses[note] || "Je ne suis pas sûr de cette note...";
+        }
+    </script>
+</body>
+
+</html>

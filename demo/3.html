@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Jeux de Mémoire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .memory-game {
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: #ffe4b5;
+            margin: 10px;
+            padding: 20px;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.5s;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .card .card-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card .card-front,
+        .card .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .card .card-front {
+            background-color: #ffe4b5;
+        }
+
+        .card .card-back {
+            background-color: #fff;
+            transform: rotateY(180deg);
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        #stats {
+            margin-top: 20px;
+            display: none; /* Caché par défaut */
+        }
+
+        #stats.show {
+            display: block; /* Affiché lorsque la partie est terminée */
+        }
+
+        #stats table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #stats table th,
+        #stats table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        #stats .alert {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        #games-history {
+            margin-top: 20px;
+            display: none; /* Caché par défaut */
+        }
+
+        #games-history.show {
+            display: block; /* Affiché lorsque la partie est terminée */
+        }
+
+        #games-history table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #games-history table th,
+        #games-history table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="memory-game">
+        <h1>Jeux de Mémoire</h1>
+        <div class="cards">
+            <!-- Cartes générées par JavaScript -->
+        </div>
+        <div id="score">Score: 0</div>
+        <div id="stats">
+            <h2>Statistiques</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bonnes tentatives</th>
+                        <th>Mauvaises tentatives</th>
+                        <th>Temps écoulé (secondes)</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-body">
+                    <tr>
+                        <td id="correct-attempts">0</td>
+                        <td id="wrong-attempts">0</td>
+                        <td id="elapsed-time">0</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="result-message" class="alert" style="display: none;"></div>
+            <button onclick="restartGame()">Recommencer</button>
+        </div>
+        <div id="games-history">
+            <h2>Historique des parties</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bonnes tentatives</th>
+                        <th>Mauvaises tentatives</th>
+                        <th>Temps écoulé (secondes)</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <!-- Lignes générées par JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const moteses = ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
+        const cards = [...moteses, ...moteses]; // Doubler les cartes pour le jeu de mémoire
+        cards.sort(() => 0.5 - Math.random());
+
+        const cardsContainer = document.querySelector('.cards');
+        let firstCard, secondCard;
+        let score = 0;
+        let correctAttempts = 0;
+        let wrongAttempts = 0;
+        let startTime, endTime;
+        let gamesHistory = JSON.parse(localStorage.getItem('gamesHistory')) || [];
+
+        cards.forEach(note => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.note = note;
+
+            const cardInner = document.createElement('div');
+            cardInner.classList.add('card-inner');
+
+            const cardFront = document.createElement('div');
+            cardFront.classList.add('card-front');
+
+            const cardBack = document.createElement('div');
+            cardBack.classList.add('card-back');
+            cardBack.innerText = note.toUpperCase();
+
+            cardInner.appendChild(cardFront);
+            cardInner.appendChild(cardBack);
+            card.appendChild(cardInner);
+            card.addEventListener('click', flipCard);
+            cardsContainer.appendChild(card);
+        });
+
+        function flipCard() {
+            if (this.classList.contains('flipped') || secondCard) return;
+            this.classList.add('flipped');
+            if (!firstCard) {
+                firstCard = this;
+            } else {
+                secondCard = this;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            if (firstCard.dataset.note === secondCard.dataset.note) {
+                score += 10;
+                correctAttempts++;
+                document.getElementById('score').innerText = `Score: ${score}`;
+                setTimeout(() => {
+                    firstCard.remove();
+                    secondCard.remove();
+                    resetCards();
+                    checkGameEnd();
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    wrongAttempts++;
+                    document.getElementById('wrong-attempts').innerText = wrongAttempts;
+                    resetCards();
+                }, 1000);
+            }
+        }
+
+        function resetCards() {
+            firstCard = null;
+            secondCard = null;
+        }
+
+        function checkGameEnd() {
+            if (document.querySelectorAll('.card').length === 0) {
+                endTime = new Date();
+                const elapsedTime = Math.floor((endTime - startTime) / 1000);
+                document.getElementById('elapsed-time').innerText = elapsedTime;
+
+                const statsBody = document.getElementById('stats-body');
+                statsBody.innerHTML = `
+                    <tr>
+                        <td>${correctAttempts}</td>
+                        <td>${wrongAttempts}</td>
+                        <td>${elapsedTime}</td>
+                    </tr>
+                `;
+
+                const resultMessage = document.getElementById('result-message');
+                if (wrongAttempts === 0) {
+                    resultMessage.style.display = 'block';
+                    resultMessage.innerText = 'Félicitations ! Aucune erreur !';
+                } else {
+                    const successRate = (correctAttempts / (correctAttempts + wrongAttempts)) * 100;
+                    if (successRate > 70) {
+                        resultMessage.style.display = 'block';
+                        resultMessage.innerText = `Bien joué ! Votre taux de réussite est de ${successRate.toFixed(2)}%.`;
+                    } else {
+                        resultMessage.style.display = 'block';
+                        resultMessage.innerText = `Vous pouvez mieux faire ! Votre taux de réussite est de ${successRate.toFixed(2)}%.`;
+                    }
+                }
+
+                // Ajouter les informations de la partie à l'historique
+                const gameInfo = {
+                    date: new Date().toLocaleString(),
+                    correctAttempts: correctAttempts,
+                    wrongAttempts: wrongAttempts,
+                    elapsedTime: elapsedTime
+                };
+                gamesHistory.push(gameInfo);
+                localStorage.setItem('gamesHistory', JSON.stringify(gamesHistory));
+
+                // Mettre à jour l'affichage de l'historique
+                updateHistoryTable();
+
+                // Afficher les tableaux stats et historique
+                document.getElementById('stats').classList.add('show');
+                document.getElementById('games-history').classList.add('show');
+            }
+        }
+
+        function updateHistoryTable() {
+            const historyBody = document.getElementById('history-body');
+            historyBody.innerHTML = '';
+            gamesHistory.forEach(game => {
+                historyBody.innerHTML += `
+                    <tr>
+                        <td>${game.date}</td>
+                        <td>${game.correctAttempts}</td>
+                        <td>${game.wrongAttempts}</td>
+                        <td>${game.elapsedTime}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function restartGame() {
+            // Réinitialiser les variables
+            score = 0;
+            correctAttempts = 0;
+            wrongAttempts = 0;
+            startTime = null;
+            endTime = null;
+
+            // Réinitialiser l'affichage
+            document.getElementById('score').innerText = 'Score: 0';
+            document.querySelectorAll('.card').forEach(card => card.remove());
+            document.getElementById('stats').classList.remove('show');
+            document.getElementById('games-history').classList.remove('show');
+
+            // Générer de nouvelles cartes
+            cards.sort(() => 0.5 - Math.random());
+            cards.forEach(note => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.note = note;
+
+                const cardInner = document.createElement('div');
+                cardInner.classList.add('card-inner');
+
+                const cardFront = document.createElement('div');
+                cardFront.classList.add('card-front');
+
+                const cardBack = document.createElement('div');
+                cardBack.classList.add('card-back');
+                cardBack.innerText = note.toUpperCase();
+
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                card.appendChild(cardInner);
+                card.addEventListener('click', flipCard);
+                cardsContainer.appendChild(card);
+            });
+
+            // Réinitialiser l'historique et le message de résultat
+            document.getElementById('result-message').style.display = 'none';
+            document.getElementById('wrong-attempts').innerText = '0';
+
+            // Mettre à jour l'historique visible
+            updateHistoryTable();
+        }
+
+        // Charger l'historique au chargement de la page
+        updateHistoryTable();
+    </script>
+</body>
+
+</html>

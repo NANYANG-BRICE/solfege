@@ -8,8 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Gochi+Hand|Arvo:400,700" rel="stylesheet">
     <link href="css/jquery.bxslider.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="css/sweetalert2.min.js"></script>
     <style>
         .table {
             width: 100%;
@@ -112,22 +111,25 @@
                                         <th class="th"><span id="dateNaissanceUser"></span></th>
                                     </tr>
                                     <tr class="tr">
-                                        <th class="th">Exercices</th>
+                                        <th class="th">Apprentissage</th>
+                                        <th class="th">Jeux</th>
                                         <th class="th">Quiz</th>
-                                        <th class="th">Cours</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="tr">
-                                        <td class="td">18/20</td>
-                                        <td class="td">16/20</td>
-                                        <td class="td">19/20</td>
+                                        <td class="td">
+                                            <span id="apprentissage-stat"></span>
+                                        </td>
+                                        <td class="td">
+                                            <span id="jeu-stat"></span>
+                                        </td>
+                                        <td class="td">
+                                            <span id="quiz-stat"></span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 60%;">60%</div>
-                            </div>
                         </li>
                     </ul>
                 </section>
@@ -305,6 +307,13 @@
         let storedNom;
         let storedPrenom;
         let storedDateNaissance;
+        let storedPerformances;
+        let storedgamesHistory;
+        let storedquizSessions;
+        let gamesPourcent;
+        let successRatioPerf = 0;
+        let successRatioGame = 0;
+        let successRatioQuiz = 0;
 
         $(document).ready(function () {
             fetchProfile();
@@ -314,15 +323,45 @@
             storedNom = localStorage.getItem('nom') || '--------';
             storedPrenom = localStorage.getItem('prenom') || '--------';
             storedDateNaissance = localStorage.getItem('dateNaissance') || '--------';
+            storedPerformances = JSON.parse(localStorage.getItem('performance')) || [];
+            storedGamesHistory = JSON.parse(localStorage.getItem('gamesHistory')) || [];
+            storedQuizSessions = JSON.parse(localStorage.getItem('quizSessions')) || [];
+
+            if (storedPerformances !== null && storedPerformances.length > 0) {
+                let successCount = storedPerformances.filter(item => item.success === true).length;
+                let totalCount = storedPerformances.length;
+                successRatioPerf = (successCount / totalCount) * 100;
+            }
+
+            if (storedQuizSessions !== null && storedQuizSessions.length > 0) {
+                let successCount = storedQuizSessions.filter(item => item.correct != "Non").length;
+                let totalCount = storedPerformances.length;
+                successRatioQuiz = (successCount / totalCount) * 100;
+            }
+
+            let totalGames = storedGamesHistory.length;
+            let totalProgress = 0;
+
+            storedGamesHistory.forEach(game => {
+                let totalAttempts = game.correctAttempts + game.wrongAttempts;
+                let percentageProgress = (game.correctAttempts / totalAttempts) * 100;
+                totalProgress += percentageProgress;
+            });
+
+            // Calcul du pourcentage global
+            let globalPercentage = totalProgress / totalGames;
+            successRatioGame = globalPercentage
+            console.log(`Ratio de succès : ${successRatioGame.toFixed(2)}%`);
             $('#nomUser').text(storedNom);
             $('#prenomUser').text(storedPrenom);
             $('#dateNaissanceUser').text(storedDateNaissance);
-
-            
             $('#nom').val(storedNom);
             $('#prenom').val(storedPrenom);
             $('#dateNaissance').val(storedDateNaissance);
-            console.log(storedNom)
+
+            $("#apprentissage-stat").text(successRatioPerf.toFixed(2)+"%");
+            $("#jeu-stat").text(successRatioGame.toFixed(2)+"%");
+            $("#quiz-stat").text(successRatioQuiz.toFixed(2)+"%");
         }
 
         function showSection(sectionId) {
@@ -334,7 +373,6 @@
             Swal.fire({
                 title: 'Confirmer la sélection',
                 text: `Sélectionner cette image comme votre avatar ?`,
-                icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Continuer',
                 cancelButtonText: 'Annuler'
@@ -344,7 +382,6 @@
                     Swal.fire({
                         title: 'Sélectionné!',
                         text: `Image sélectionnée comme votre nouvel avatar.`,
-                        icon: 'success',
                         confirmButtonText: 'Continuer'
                     });
                 }
@@ -360,7 +397,6 @@
             Swal.fire({
                 title: 'Confirmer Enregistrement',
                 text: "Souhaitez-vous continuer vers l'enregistrement de ces informations ?",
-                icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Continuer',
                 cancelButtonText: 'Annuler'
@@ -373,7 +409,6 @@
                     Swal.fire({
                         title: 'Profil enregistré !',
                         text: "Votre profil utilisateur a été enregistré avec succès.",
-                        icon: 'success',
                         confirmButtonText: 'Continuer'
                     });
                     $('#nom').val(nom);

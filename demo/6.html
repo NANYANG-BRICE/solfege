@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi des Progrès</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .progress-tracker {
+            text-align: center;
+        }
+
+        .progress {
+            margin-top: 20px;
+        }
+
+        .progress-item {
+            background-color: #ffe4b5;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress-tracker">
+        <h1>Suivi des Progrès</h1>
+        <div class="progress">
+            <!-- Données de progrès générées par JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const progressData = [
+            { lesson: "Notes de Musique", progress: 80 },
+            { lesson: "Rythmes Simples", progress: 50 },
+            { lesson: "Reconnaissance Auditive", progress: 70 },
+            { lesson: "Jeux de Mémoire", progress: 90 }
+        ];
+
+        const progressContainer = document.querySelector('.progress');
+        progressData.forEach(item => {
+            const progressItem = document.createElement('div');
+            progressItem.classList.add('progress-item');
+            progressItem.innerText = `${item.lesson}: ${item.progress}%`;
+            progressContainer.appendChild(progressItem);
+        });
+
+    </script>
+</body>
+
+</html>

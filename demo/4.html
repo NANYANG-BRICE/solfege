@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Apprends les Rythmes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .rhythm {
+            text-align: center;
+        }
+
+        .piano {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .key {
+            width: 80px; /* Augmenter la largeur des touches */
+            height: 200px;
+            margin: 0 5px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #000;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0px 4px 3px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to bottom, #fff, #ccc);
+        }
+
+        .key:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-color: #000;
+            bottom: 0;
+            left: 0;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .key:hover {
+            transform: scale(1.1);
+        }
+
+        .label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="rhythm">
+        <h1>Apprends les Rythmes</h1>
+        <div class="piano">
+            <div class="key" data-rhythm="ronde">
+                <div class="label">Ronde</div>
+            </div>
+            <div class="key" data-rhythm="blanche">
+                <div class="label">Blanche</div>
+            </div>
+            <div class="key" data-rhythm="noire">
+                <div class="label">Noire</div>
+            </div>
+            <div class="key" data-rhythm="croche">
+                <div class="label">Croche</div>
+            </div>
+            <div class="key" data-rhythm="double-croche">
+                <div class="label">Double<br>Croche</div>
+            </div>
+            <div class="key" data-rhythm="triple-croche">
+                <div class="label">Triple<br>Croche</div>
+            </div>
+            <div class="key" data-rhythm="quadruple-croche">
+                <div class="label">Quadruple<br>Croche</div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audioPlayer">
+        <!-- Source audio à remplacer dynamiquement -->
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const keys = document.querySelectorAll('.key');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const rhythms = ['ronde', 'blanche', 'noire', 'croche', 'double-croche', 'triple-croche', 'quadruple-croche'];
+            let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+
+            keys.forEach(key => {
+                key.addEventListener('click', () => {
+                    const rhythm = key.getAttribute('data-rhythm');
+                    const audioSource = `audio/${rhythm}.mp3`;
+                    playSequence(audioSource);
+                    displayMessage(rhythm);
+                    saveProgress(rhythm);
+                });
+            });
+
+            function playSequence(audioSource) {
+                audioPlayer.pause();
+                audioPlayer.innerHTML = ''; // Réinitialiser l'élément audio pour effacer les sources précédentes
+                const source = document.createElement('source');
+                source.src = audioSource;
+                source.type = 'audio/mpeg';
+                audioPlayer.appendChild(source);
+                audioPlayer.play();
+            }
+
+            function displayMessage(rhythm) {
+                alert(`Vous avez sélectionné le rythme ${rhythm.toUpperCase()}`);
+            }
+
+            function saveProgress(rhythm) {
+                sessions.push({
+                    rhythm: rhythm,
+                    date: new Date().toLocaleString(),
+                    performance: calculatePerformance(rhythm)
+                });
+                localStorage.setItem('sessions', JSON.stringify(sessions));
+            }
+
+            function calculatePerformance(rhythm) {
+                // Simulation d'un calcul de performance basé sur la complexité du rythme
+                switch (rhythm) {
+                    case 'ronde':
+                        return 90; // Par exemple, 90% de réussite
+                    case 'blanche':
+                        return 85;
+                    case 'noire':
+                        return 80;
+                    case 'croche':
+                        return 75;
+                    case 'double-croche':
+                        return 70;
+                    case 'triple-croche':
+                        return 65;
+                    case 'quadruple-croche':
+                        return 60;
+                    default:
+                        return 0;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

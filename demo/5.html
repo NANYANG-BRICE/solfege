@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Interactif</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11"></link>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .quiz {
+            text-align: center;
+        }
+
+        .question {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .option {
+            background-color: #ffe4b5;
+            margin: 0 10px;
+            padding: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            border: none;
+            font-size: 18px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .option:hover {
+            transform: scale(1.1);
+            background-color: #ffb347;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz">
+        <h1>Quiz Interactif</h1>
+        <div class="question" id="question">Quelle est cette note ?</div>
+        <div class="options" id="options"></div>
+        <div id="feedback"></div>
+        <div id="score">Score: 0</div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notes = ['do', 'ré', 'mi', 'fa', 'sol', 'la', 'si'];
+            const totalQuestions = 10;
+            let questionCount = 0;
+            let correctAnswer = '';
+            let sessions = JSON.parse(localStorage.getItem('quizSessions')) || [];
+            let score = 0;
+
+            function generateQuestion() {
+                if (questionCount < totalQuestions) {
+                    questionCount++;
+                    const questionNote = notes[Math.floor(Math.random() * notes.length)];
+                    correctAnswer = questionNote;
+
+                    document.getElementById('question').innerText = `Quelle est cette note ?`;
+                    const audio = new Audio(`audio/${questionNote}.mp3`);
+
+                    Swal.fire({
+                        title: 'Commencer le quiz ?',
+                        text: 'Êtes-vous prêt à écouter la note et répondre à la question ?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Oui',
+                        cancelButtonText: 'Annuler'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            audio.play();
+                            displayOptions();
+                        }
+                    });
+                } else {
+                    finishQuiz();
+                }
+            }
+
+            function displayOptions() {
+                const optionsContainer = document.getElementById('options');
+                optionsContainer.innerHTML = '';
+                const shuffledNotes = [...notes].sort(() => 0.5 - Math.random());
+
+                shuffledNotes.forEach(note => {
+                    const button = document.createElement('button');
+                    button.classList.add('option');
+                    button.setAttribute('data-answer', note);
+                    button.innerText = note.charAt(0).toUpperCase() + note.slice(1);
+                    button.addEventListener('click', checkAnswer);
+                    optionsContainer.appendChild(button);
+                });
+            }
+
+            function checkAnswer(event) {
+                const selectedAnswer = event.target.getAttribute('data-answer');
+                const feedback = document.getElementById('feedback');
+                if (selectedAnswer === correctAnswer) {
+                    feedback.innerText = "Correct!";
+                    feedback.style.color = '#28a745'; // Vert pour la bonne réponse
+                    score++;
+                    document.getElementById('score').innerText = `Score: ${score}`;
+                    recordSession(true);
+                } else {
+                    feedback.innerText = `Incorrect, la réponse correcte est ${correctAnswer.toUpperCase()}`;
+                    feedback.style.color = '#dc3545'; // Rouge pour la mauvaise réponse
+                    recordSession(false);
+                }
+                setTimeout(() => {
+                    feedback.innerText = '';
+                    generateQuestion();
+                }, 1500);
+            }
+
+            function recordSession(isCorrect) {
+                sessions.push({
+                    date: new Date().toLocaleString(),
+                    correct: isCorrect ? 'Oui' : 'Non'
+                });
+                localStorage.setItem('quizSessions', JSON.stringify(sessions));
+            }
+
+            function finishQuiz() {
+                Swal.fire({
+                    title: 'Quiz terminé',
+                    html: `Votre score final est de ${score} sur ${totalQuestions}`,
+                    icon: 'info'
+                }).then(() => {
+                    // Réinitialiser les variables pour une nouvelle session
+                    questionCount = 0;
+                    score = 0;
+                    document.getElementById('score').innerText = 'Score: 0';
+                    generateQuestion();
+                });
+            }
+
+            generateQuestion();
+        });
+    </script>
+</body>
+
+</html>
