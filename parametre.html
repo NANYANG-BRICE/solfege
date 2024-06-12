@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Académie de Piano - Accueil</title>
+    <link href="https://fonts.googleapis.com/css?family=Gochi+Hand|Arvo:400,700" rel="stylesheet">
+    <link href="css/jquery.bxslider.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .table {
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        .tr,
+        .th,
+        .td {
+            border: 1px solid rgb(117, 117, 117);
+            text-align: center;
+            padding: 1%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" class="gallery">
+        <div class="wrapper-holder">
+            <header id="header">
+                <div class="left-part"></div>
+                <a id="logo" href="index.html">KidZik</a>
+                <div class="bar-holder">
+                    <a class="menu_trigger" href="#">Menu</a>
+                    <nav id="nav">
+                        <ul>
+                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="cours.html">Cours</a></li>
+                            <li><a href="parametre.html">Paramètres</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+            <div class="dvdr"></div>
+            <div class="container">
+                <section id="main">
+                    <h1 style="text-align: center;">Paramètres</h1>
+                    <div class="tabs">
+                        <ul class="filter-controls">
+                            <li><a href="#" onclick="showSection('avatar-section')">Avatar</a></li>
+                            <li><a href="#" onclick="showSection('profil-section')">Profil</a></li>
+                            <li><a href="#" onclick="showSection('progressions-section')">Progressions</a></li>
+                        </ul>
+                    </div>
+                    <ul style="height: 60vh;">
+                        <li class="section-content active" id="avatar-section">
+                            <br><br>
+                            <ul class="slider sortable-grid">
+                                <li>
+                                    <ul>
+                                        <li class="grid-item meeting"
+                                            onclick="selectAvatar('images/img-meeting01.jpg')">
+                                            <a href="#"><img src="images/img-meeting01.jpg" alt="" />
+                                                <div class="mask"></div>
+                                            </a>
+                                        </li>
+                                        <li class="grid-item meeting"
+                                            onclick="selectAvatar('images/img-meeting02.jpg')">
+                                            <a href="#"><img src="images/img-meeting02.jpg" alt="" />
+                                                <div class="mask"></div>
+                                            </a>
+                                        </li>
+                                        <li class="grid-item meeting"
+                                            onclick="selectAvatar('images/img-meeting03.jpg')">
+                                            <a href="#"><img src="images/img-meeting03.jpg" alt="" />
+                                                <div class="mask"></div>
+                                            </a>
+                                        </li>
+                                        <li class="grid-item meeting"
+                                            onclick="selectAvatar('images/img-meeting04.jpg')">
+                                            <a href="#"><img src="images/img-meeting04.jpg" alt="" />
+                                                <div class="mask"></div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="section-content" id="profil-section">
+                            <br><br>
+                            <form id="profile-form" onsubmit="saveProfile(event)">
+                                <input type="text" id="nom" name="nom" required><br><br>
+                                <input type="text" id="prenom" name="prenom" required><br><br>
+                                <input type="date" id="dateNaissance" name="dateNaissance" required><br><br>
+                                <button class="btn yellow" href="#" type="submit">Enregistrer</button>
+                            </form>
+                        </li>
+                        <li class="section-content" id="progressions-section">
+                            <br><br>
+                            <table border="1" class="table">
+                                <thead>
+                                    <tr class="tr">
+                                        <th class="th"><b>Nom</b></th>
+                                        <th class="th"><b>Prénom</b></th>
+                                        <th class="th"><b>Date de Naissance</b></th>
+                                    </tr>
+                                    <tr class="tr">
+                                        <th class="th"><span id="nomUser"></span></th>
+                                        <th class="th"><span id="prenomUser"></span></th>
+                                        <th class="th"><span id="dateNaissanceUser"></span></th>
+                                    </tr>
+                                    <tr class="tr">
+                                        <th class="th">Exercices</th>
+                                        <th class="th">Quiz</th>
+                                        <th class="th">Cours</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="tr">
+                                        <td class="td">18/20</td>
+                                        <td class="td">16/20</td>
+                                        <td class="td">19/20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 60%;">60%</div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+
+
+        <div class="top-pink-border"></div>
+        <div class="event-wrap">
+            <div class="block-event">
+                <div class="upcoming-event">
+                    <h2>Événement à venir en avril</h2>
+                    <div class="event-description">
+                        <h3><a href="#">Concert des élèves</a></h3>
+                        <div class="metadata">
+                            <time datetime="2024-04-17T09:00">17.04.24
+                                <span>09:00</span></time>
+                            <span>Académie de Piano</span>
+                        </div>
+                        <p>Rejoignez-nous pour un concert exceptionnel où nos élèves présenteront leurs progrès et leurs
+                            talents.</p>
+                        <a class="btn yellow" href="#">En savoir plus</a>
+                    </div>
+                </div>
+                <div class="widget-calendar">
+                    <table class="event-calendar">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="controls"><span class="prev-mn"><a href="#">-</a></span></th>
+                                <th scope="col" colspan="5" class="month">Juin 2024</th>
+                                <th scope="col" class="controls"><span class="next-mn"><a href="#">-</a></span></th>
+                            </tr>
+                            <tr>
+                                <th scope="col" title="Lundi">Lun</th>
+                                <th scope="col" title="Mardi">Mar</th>
+                                <th scope="col" title="Mercredi">Mer</th>
+                                <th scope="col" title="Jeudi">Jeu</th>
+                                <th scope="col" title="Vendredi">Ven</th>
+                                <th scope="col" title="Samedi">Sam</th>
+                                <th scope="col" title="Dimanche">Dim</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="cell-wrap">-</div>
+                                </td> <!-- Jours précédents si nécessaire -->
+                                <td>
+                                    <div class="cell-wrap">-</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">-</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">1</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">2</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">3</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap archival sun"><a href="#">4</a></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="cell-wrap">5</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">6</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">7</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap upcoming thu"><a href="#">8</a></div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">9</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">10</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap archival sun"><a href="#">11</a></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="cell-wrap">12</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">13</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">14</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">15</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">16</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">17</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap upcoming thu"><a href="#">18</a></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="cell-wrap">19</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">20</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">21</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">22</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">23</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">24</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap archival sun"><a href="#">25</a></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="cell-wrap">26</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">27</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">28</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">29</div>
+                                </td>
+                                <td>
+                                    <div class="cell-wrap">30</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.bxslider.min.js"></script>
+    <script type="text/javascript" src="js/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
+    <script type="text/javascript" src="js/isotope.pkgd.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script>
+        let storedNom;
+        let storedPrenom;
+        let storedDateNaissance;
+
+        $(document).ready(function () {
+            fetchProfile();
+        });
+
+        function fetchProfile() {
+            storedNom = localStorage.getItem('nom') || '--------';
+            storedPrenom = localStorage.getItem('prenom') || '--------';
+            storedDateNaissance = localStorage.getItem('dateNaissance') || '--------';
+            $('#nomUser').text(storedNom);
+            $('#prenomUser').text(storedPrenom);
+            $('#dateNaissanceUser').text(storedDateNaissance);
+
+            
+            $('#nom').val(storedNom);
+            $('#prenom').val(storedPrenom);
+            $('#dateNaissance').val(storedDateNaissance);
+            console.log(storedNom)
+        }
+
+        function showSection(sectionId) {
+            $('.section-content').removeClass('active');
+            $('#' + sectionId).addClass('active');
+        }
+
+        function selectAvatar(avatarName) {
+            Swal.fire({
+                title: 'Confirmer la sélection',
+                text: `Sélectionner cette image comme votre avatar ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Continuer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem('avatar', avatarName);
+                    Swal.fire({
+                        title: 'Sélectionné!',
+                        text: `Image sélectionnée comme votre nouvel avatar.`,
+                        icon: 'success',
+                        confirmButtonText: 'Continuer'
+                    });
+                }
+            });
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            const nom = $('#nom').val();
+            const prenom = $('#prenom').val();
+            const dateNaissance = $('#dateNaissance').val();
+
+            Swal.fire({
+                title: 'Confirmer Enregistrement',
+                text: "Souhaitez-vous continuer vers l'enregistrement de ces informations ?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Continuer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem('nom', nom);
+                    localStorage.setItem('prenom', prenom);
+                    localStorage.setItem('dateNaissance', dateNaissance);
+
+                    Swal.fire({
+                        title: 'Profil enregistré !',
+                        text: "Votre profil utilisateur a été enregistré avec succès.",
+                        icon: 'success',
+                        confirmButtonText: 'Continuer'
+                    });
+                    $('#nom').val(nom);
+                    $('#prenom').val(prenom);
+                    $('#dateNaissance').val(dateNaissance);
+                    $('#nomUser').text(nom);
+                    $('#prenomUser').text(prenom);
+                    $('#dateNaissanceUser').text(dateNaissance);
+
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
