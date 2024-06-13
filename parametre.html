@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -10,17 +10,15 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="css/sweetalert2.min.js"></script>
     <style>
-        .table {
-            width: 100%;
-            border-radius: 4px;
-        }
-
-        .tr,
-        .th,
-        .td {
-            border: 1px solid rgb(117, 117, 117);
-            text-align: center;
-            padding: 1%;
+        input[type=file]::file-selector-button {
+            margin-right: 8px;
+            border: none;
+            background: #084cdf;
+            padding: 8px 12px;
+            color: #fff;
+            cursor: pointer;
+            outline: 5px dashed #000;
+            outline-offset: 2px;
         }
     </style>
 </head>
@@ -30,13 +28,14 @@
         <div class="wrapper-holder">
             <header id="header">
                 <div class="left-part"></div>
-                <a id="logo" href="index.html">KidZik</a>
+                <a id="logo" href="index.html"></a>
                 <div class="bar-holder">
                     <a class="menu_trigger" href="#">Menu</a>
                     <nav id="nav">
                         <ul>
                             <li><a href="index.html">Accueil</a></li>
                             <li><a href="cours.html">Cours</a></li>
+                            <li><a href="jeux.html">Jeux</a></li>
                             <li><a href="parametre.html">Paramètres</a></li>
                         </ul>
                     </nav>
@@ -54,8 +53,7 @@
                         </ul>
                     </div>
                     <ul style="height: 60vh;">
-                        <li class="section-content active" id="avatar-section">
-                            <br><br>
+                        <li class="section-content" id="avatar-section">
                             <ul class="slider sortable-grid">
                                 <li>
                                     <ul>
@@ -86,18 +84,35 @@
                                     </ul>
                                 </li>
                             </ul>
+                            <br>
+                            <br>
+                            <br>
+                            <!-- <label for="ava">
+                                <input type="file" class="btn yellow" value="" id="ava" accept="images/*">
+                                <button type="button" onclick="getAvatar()">save</button>
+                            </label> -->
+
                         </li>
                         <li class="section-content" id="profil-section">
                             <br><br>
                             <form id="profile-form" onsubmit="saveProfile(event)">
-                                <input type="text" id="nom" name="nom" required><br><br>
-                                <input type="text" id="prenom" name="prenom" required><br><br>
+                                <div style="text-align: center;">
+                                    <img src="" width="200px" height="200px" id="d-img" alt=""
+                                        style="border-radius: 90px 90px 90px 90px;" />
+                                </div>
+                                <br>
+                                <br>
+                                <input type="text" id="nom" name="nom" placeholder="Entrez le nom de l'utilisateur...."
+                                    required><br><br>
+                                <input type="text" id="prenom" name="prenom"
+                                    placeholder="Entrez le prenom de l'utilisateur...." required><br><br>
                                 <input type="date" id="dateNaissance" name="dateNaissance" required><br><br>
                                 <button class="btn yellow" href="#" type="submit">Enregistrer</button>
                             </form>
                         </li>
                         <li class="section-content" id="progressions-section">
-                            <br><br>
+                            <br>
+                            <br>
                             <table border="1" class="table">
                                 <thead>
                                     <tr class="tr">
@@ -143,14 +158,24 @@
     <script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
     <script type="text/javascript" src="js/isotope.pkgd.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+
+    <script>
+        function showSection(sectionId) {
+            $('.section-content').removeClass('active');
+            $('#' + sectionId).addClass('active');
+        }
+
+
+    </script>
+
     <script>
         let storedNom;
+        let storedImg;
         let storedPrenom;
         let storedDateNaissance;
         let storedPerformances;
-        let storedgamesHistory;
-        let storedquizSessions;
-        let gamesPourcent;
+        let storedGamesHistory;
+        let storedQuizSessions;
         let successRatioPerf = 0;
         let successRatioGame = 0;
         let successRatioQuiz = 0;
@@ -159,7 +184,37 @@
             fetchProfile();
         });
 
+        function getAvatar() {
+            var fileInput = document.getElementById('ava');
+            var file = fileInput.files[0];
+            console.log(file.path);
+
+            if (file) {
+                console.log("Selected file:", file.name);
+                console.log("File type:", file.type);
+                console.log("File size:", file.size, "bytes");
+
+                // You can now use the File object, for example, to display the image
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log("File content:", e.target.result);
+                    // You can display the image using e.target.result as the src
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    document.body.appendChild(img);
+                };
+
+                console.log(reader.readAsDataURL(file))
+                selectAvatar(reader.readAsDataURL(file))
+
+            } else {
+                console.log("No file selected");
+            }
+        }
+
+
         function fetchProfile() {
+            storedImg = localStorage.getItem('avatar') || '';
             storedNom = localStorage.getItem('nom') || '--------';
             storedPrenom = localStorage.getItem('prenom') || '--------';
             storedDateNaissance = localStorage.getItem('dateNaissance') || '--------';
@@ -167,46 +222,50 @@
             storedGamesHistory = JSON.parse(localStorage.getItem('gamesHistory')) || [];
             storedQuizSessions = JSON.parse(localStorage.getItem('quizSessions')) || [];
 
-            if (storedPerformances !== null && storedPerformances.length > 0) {
+            console.log(storedImg)
+
+            // Calcul du ratio de réussite pour les performances
+            if (storedPerformances.length > 0) {
                 let successCount = storedPerformances.filter(item => item.success === true).length;
                 let totalCount = storedPerformances.length;
                 successRatioPerf = (successCount / totalCount) * 100;
             }
 
-            if (storedQuizSessions !== null && storedQuizSessions.length > 0) {
-                let successCount = storedQuizSessions.filter(item => item.correct != "Non").length;
-                let totalCount = storedPerformances.length;
+            // Calcul du ratio de réussite pour les quiz
+            if (storedQuizSessions.length > 0) {
+                let successCount = storedQuizSessions.filter(item => item.correct !== "Non").length;
+                let totalCount = storedQuizSessions.length;
                 successRatioQuiz = (successCount / totalCount) * 100;
             }
 
+            // Calcul du ratio de réussite global des jeux
             let totalGames = storedGamesHistory.length;
             let totalProgress = 0;
 
-            storedGamesHistory.forEach(game => {
-                let totalAttempts = game.correctAttempts + game.wrongAttempts;
-                let percentageProgress = (game.correctAttempts / totalAttempts) * 100;
-                totalProgress += percentageProgress;
-            });
+            if (totalGames > 0) {
+                storedGamesHistory.forEach(game => {
+                    let totalAttempts = game.correctAttempts + game.wrongAttempts;
+                    let percentageProgress = (game.correctAttempts / totalAttempts) * 100;
+                    totalProgress += percentageProgress;
+                });
 
-            // Calcul du pourcentage global
-            let globalPercentage = totalProgress / totalGames;
-            successRatioGame = globalPercentage
-            console.log(`Ratio de succès : ${successRatioGame.toFixed(2)}%`);
+                let globalPercentage = totalProgress / totalGames;
+                successRatioGame = parseFloat(globalPercentage);
+            }
+
+            // Mise à jour de l'interface utilisateur avec les informations récupérées
             $('#nomUser').text(storedNom);
+            $('#d-img').attr('src', './' + storedImg);
+
             $('#prenomUser').text(storedPrenom);
             $('#dateNaissanceUser').text(storedDateNaissance);
             $('#nom').val(storedNom);
             $('#prenom').val(storedPrenom);
             $('#dateNaissance').val(storedDateNaissance);
 
-            $("#apprentissage-stat").text(successRatioPerf.toFixed(2)+"%");
-            $("#jeu-stat").text(successRatioGame.toFixed(2)+"%");
-            $("#quiz-stat").text(successRatioQuiz.toFixed(2)+"%");
-        }
-
-        function showSection(sectionId) {
-            $('.section-content').removeClass('active');
-            $('#' + sectionId).addClass('active');
+            $("#apprentissage-stat").text(successRatioPerf.toFixed(2) + "%");
+            $("#jeu-stat").text(successRatioGame.toFixed(2) + "%");
+            $("#quiz-stat").text(successRatioQuiz.toFixed(2) + "%");
         }
 
         function selectAvatar(avatarName) {
@@ -219,6 +278,8 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     localStorage.setItem('avatar', avatarName);
+                    storedImg = localStorage.getItem('avatar');
+                    $('#d-img').attr('src', './' + storedImg);
                     Swal.fire({
                         title: 'Sélectionné!',
                         text: `Image sélectionnée comme votre nouvel avatar.`,
@@ -251,17 +312,20 @@
                         text: "Votre profil utilisateur a été enregistré avec succès.",
                         confirmButtonText: 'Continuer'
                     });
+
+                    // Mettre à jour l'interface utilisateur avec les nouvelles informations
                     $('#nom').val(nom);
                     $('#prenom').val(prenom);
                     $('#dateNaissance').val(dateNaissance);
                     $('#nomUser').text(nom);
                     $('#prenomUser').text(prenom);
                     $('#dateNaissanceUser').text(dateNaissance);
-
                 }
             });
         }
     </script>
+
+
 </body>
 
 </html>

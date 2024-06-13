@@ -10,377 +10,118 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="css/sweetalert2.min.js"></script>
     <style>
-        .text-center {
-            text-align: center !important;
-        }
-
-        .lesson {
-            text-align: center;
+          .piano-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            width: 1000px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .piano-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .volume-control {
+            display: flex;
             align-items: center;
         }
 
-        .keyboard {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
+        .volume-control label {
+            margin-right: 10px;
         }
 
-        .white-key {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 80px;
-            height: 250px;
-            margin: 0 5px;
+        .note-display {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .note-name,
+        .note-description {
+            font-size: 18px;
+        }
+
+        .musical-staff {
+            margin-bottom: 20px;
+        }
+
+        .musical-staff {
             position: relative;
-            cursor: pointer;
-        }
-
-        .black-key {
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 0 0 3px 3px;
-            width: 50px;
-            height: 150px;
-            position: absolute;
-            top: 0;
-            left: calc(50% - 25px);
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .black-key:hover {
-            background-color: #666;
-        }
-
-        .note-text {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #333;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .staff {
-            position: relative;
-            margin-top: 20px;
             width: 100%;
             max-width: 600px;
-            height: 100px;
+            height: 140px;
             border: 1px solid #000;
-            background: linear-gradient(white 20%, transparent 20%) 0 0 / 100% 20px repeat;
+        }
+
+        #staff {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 140px;
         }
 
         .note {
             position: absolute;
-            font-size: 2rem;
-        }
-
-        .note-info {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .note-info h2 {
-            margin-bottom: 10px;
-        }
-
-        .note-info p {
-            margin: 0;
-        }
-
-
-
-
-
-
-        .exercise {
-            text-align: center;
+            font-size: 24px;
+            transform: translateX(-50%);
         }
 
         .piano-keys {
             display: flex;
-            justify-content: center;
-            margin-top: 20px;
+            position: relative;
         }
 
-        .white-key1 {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
+        .piano-key {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 60px;
+            height: 300px;
+            margin: 0 2px;
             border-radius: 5px;
-            width: 80px;
-            height: 250px;
-            margin: 0 5px;
             position: relative;
             cursor: pointer;
+            font-size: 18px;
         }
 
-        .black-key1 {
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 0 0 3px 3px;
-            width: 50px;
-            height: 150px;
-            position: absolute;
-            top: 0;
-            left: calc(50% - 25px);
+        .white-key {
+            background-color: white;
+            color: black;
             z-index: 1;
-            cursor: pointer;
         }
 
-        .black-key1:hover {
-            background-color: #666;
-        }
-
-        .note-text {
+        .black-key {
+            background-color: black;
+            color: white;
+            width: 40px;
+            height: 180px;
+            margin-top: 10px;
             position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #333;
-            font-weight: bold;
-            pointer-events: none;
             z-index: 2;
         }
 
-        #feedback {
-            margin-top: 20px;
-            font-size: 1.5em;
-            font-weight: bold;
+        .black-key[data-note="do-sharp"] {
+            left: 42.5px;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        .memory-game {
-            text-align: center;
+        .black-key[data-note="re-sharp"] {
+            left: 105px;
         }
 
-        .cards {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
+        .black-key[data-note="fa-sharp"] {
+            left: 235px;
         }
 
-        .card {
-            background-color: #ffe4b5;
-            margin: 10px;
-            padding: 20px;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.5s;
-            position: relative;
-            perspective: 1000px;
+        .black-key[data-note="sol-sharp"] {
+            left: 297px;
         }
 
-        .card .card-inner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transform-style: preserve-3d;
-            transition: transform 0.5s;
-        }
-
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card .card-front,
-        .card .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-        }
-
-        .card .card-front {
-            background-color: #ffe4b5;
-        }
-
-        .card .card-back {
-            background-color: #fff;
-            transform: rotateY(180deg);
-        }
-
-        #score {
-            margin-top: 20px;
-            font-size: 1.5em;
-        }
-
-        #stats {
-            margin-top: 20px;
-            display: none;
-            /* Caché par défaut */
-        }
-
-        #stats.show {
-            display: block;
-            /* Affiché lorsque la partie est terminée */
-        }
-
-        #stats table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        #stats table th,
-        #stats table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        #stats .alert {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-
-        #games-history {
-            margin-top: 20px;
-            display: none;
-            /* Caché par défaut */
-        }
-
-        #games-history.show {
-            display: block;
-            /* Affiché lorsque la partie est terminée */
-        }
-
-        #games-history table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        #games-history table th,
-        #games-history table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-
-
-
-
-
-
-
-
-        .rhythm {
-            text-align: center;
-        }
-
-        .piano {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-
-
-
-        .key {
-            width: 100px;
-            /* Augmenter la largeur des touches */
-            height: 200px;
-            margin: 0 5px;
-            position: relative;
-            cursor: pointer;
-            border: 1px solid #555;
-            border-radius: 0 0 5px 5px;
-            box-shadow: 0px 4px 3px rgba(19, 18, 18, 0.2);
-            background: linear-gradient(to bottom, #fff, #151515);
-        }
-
-        .key:before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 50%;
-            background-color: #666;
-            bottom: 0;
-            left: 0;
-            border-radius: 0 0 5px 5px;
-        }
-
-        .key:hover {
-            transform: scale(1.1);
-        }
-
-        .label {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #000;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-
-
-
-
-        .quiz {
-            text-align: center;
-        }
-
-        .question {
-            margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .options {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .option {
-            background-color: #ffe4b5;
-            margin: 0 10px;
-            padding: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            border: none;
-            font-size: 18px;
-            width: 100px;
-            height: 100px;
-        }
-
-        .option:hover {
-            transform: scale(1.1);
-            background-color: #ffb347;
+        .black-key[data-note="la-sharp"] {
+            left: 360px;
         }
     </style>
 </head>
@@ -390,13 +131,14 @@
         <div class="wrapper-holder">
             <header id="header">
                 <div class="left-part"></div>
-                <a id="logo" href="index.html">KidZik</a>
+                <a id="logo" href="index.html"></a>
                 <div class="bar-holder">
                     <a class="menu_trigger" href="#">Menu</a>
                     <nav id="nav">
                         <ul>
                             <li><a href="index.html">Accueil</a></li>
                             <li><a href="cours.html">Cours</a></li>
+                            <li><a href="jeux.html">Jeux</a></li>
                             <li><a href="parametre.html">Paramètres</a></li>
                         </ul>
                     </nav>
@@ -405,212 +147,200 @@
             <div class="dvdr"></div>
             <div class="container">
                 <section id="main">
-                    <div class="tabs">
-                        <ul class="filter-controls">
-                            <li><a href="#" id="cours-section">Cours</a></li>
-                            <li><a href="#" id="exercices-section">Apprentissage</a></li>
-                            <li><a href="#" id="jeux-section">Jeux</a></li>
-                            <li><a href="#" id="rythme-section">Rythmes</a></li>
-                            <li><a href="#" id="quiz-section">Quiz</a></li>
-                        </ul>
+                    <br>
+                    <br>
+                    <div class="piano-container">
+                        <div class="piano-header">
+                            <span>KIDZIK</span>
+                            <div class="volume-control">
+                                <label for="volume">Volume</label>
+                                <input type="range" id="volume" name="volume" min="0" max="100">
+                            </div>
+                        </div>
+                        <div class="note-display">
+                            <div class="note-name">Note: <span id="note-name"></span></div>
+                            <div class="note-description">Description: <span id="note-description"></span></div>
+                        </div>
+                        <div class="musical-staff">
+                            <style>
+                                #staff {
+                                    border-collapse: collapse; /* Fusionne les bordures de cellules pour une apparence uniforme */
+                                }
+                            
+                                #staff td {
+                                    border: 1px solid white; /* Bordure de 1px solide blanche autour des cellules */
+                                    height: 5px; /* Hauteur de chaque cellule à 30px */
+                                }
+                            </style>
+                            
+                            <table id="staff">
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            
+                
+                        </div>
+                        <div class="piano-keys">
+                            <div class="piano-key white-key" data-note="do" data-key="a">Do</div>
+                            <div class="piano-key black-key" data-note="do-sharp" data-key="w">Do#</div>
+                            <div class="piano-key white-key" data-note="re" data-key="s">Re</div>
+                            <div class="piano-key black-key" data-note="re-sharp" data-key="e">Re#</div>
+                            <div class="piano-key white-key" data-note="mi" data-key="d">Mi</div>
+                            <div class="piano-key white-key" data-note="fa" data-key="f">Fa</div>
+                            <div class="piano-key black-key" data-note="fa-sharp" data-key="t">Fa#</div>
+                            <div class="piano-key white-key" data-note="sol" data-key="g">Sol</div>
+                            <div class="piano-key black-key" data-note="sol-sharp" data-key="y">Sol#</div>
+                            <div class="piano-key white-key" data-note="la" data-key="h">La</div>
+                            <div class="piano-key black-key" data-note="la-sharp" data-key="u">La#</div>
+                            <div class="piano-key white-key" data-note="si" data-key="j">Si</div>
+                            <div class="piano-key white-key" data-note="do2" data-key="k">Do#</div>
+                        </div>
                     </div>
-                    <ul class="content-list" style="height: 80vh;">
-                        <li id="cours-content">
-                            <ul>
-                                <!-- Contenu pour la section "Apprentissage" à ajouter ici -->
-                                <li>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <h1 class="text-center">Apprends les Notes de Musique</h1>
-                                    <div class="lesson">
-                                        <div class="keyboard" style="margin-left: auto; margin-right: auto;">
-                                            <div class="white-key" data-note="do">
-                                                <div class="note-text">Do</div>
-                                                <div class="black-key" data-note="do#"></div>
-                                            </div>
-                                            <div class="white-key" data-note="re">
-                                                <div class="note-text">Ré</div>
-                                                <div class="black-key" data-note="re#"></div>
-                                            </div>
-                                            <div class="white-key" data-note="mi">
-                                                <div class="note-text">Mi</div>
-                                            </div>
-                                            <div class="white-key" data-note="fa">
-                                                <div class="note-text">Fa</div>
-                                                <div class="black-key" data-note="fa#"></div>
-                                            </div>
-                                            <div class="white-key" data-note="sol">
-                                                <div class="note-text">Sol</div>
-                                                <div class="black-key" data-note="sol#"></div>
-                                            </div>
-                                            <div class="white-key" data-note="la">
-                                                <div class="note-text">La</div>
-                                                <div class="black-key" data-note="la#"></div>
-                                            </div>
-                                            <div class="white-key" data-note="si">
-                                                <div class="note-text">Si</div>
-                                            </div>
-                                        </div>
-                                        <div style="display: block; width: 500px;">
-                                            <div class="note-info" id="noteInfo">
-                                                <h2>Nom de la note</h2>
-                                                <p>Description de la note</p>
-                                            </div>
-                                            <div class="staff" id="staff" style="height: 160px;">
-                                                <!-- Les notes seront ajoutées ici -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li id="exercices-content" style="display: none;">
-                            <ul>
-                                <!-- Contenu pour la section "Exercices" à ajouter ici -->
-                                <li>
-                                    <br>
-                                    <br>
-                                    <h1 class="text-center">Reconnaissance Auditive</h1>
-                                    <center>
-                                        <button class="btn yellow" type="submit" id="play-sequence">Jouer</button>
-                                    </center>
-                                    <div class="piano-keys">
-                                        <div class="white-key1" data-note="do">
-                                            <div class="note-text">Do</div>
-                                            <div class="black-key1" data-note="do#"></div>
-                                        </div>
-                                        <div class="white-key1" data-note="re">
-                                            <div class="note-text">Ré</div>
-                                            <div class="black-key1" data-note="re#"></div>
-                                        </div>
-                                        <div class="white-key1" data-note="mi">
-                                            <div class="note-text">Mi</div>
-                                        </div>
-                                        <div class="white-key1" data-note="fa">
-                                            <div class="note-text">Fa</div>
-                                            <div class="black-key1" data-note="fa#"></div>
-                                        </div>
-                                        <div class="white-key1" data-note="sol">
-                                            <div class="note-text">Sol</div>
-                                            <div class="black-key1" data-note="sol#"></div>
-                                        </div>
-                                        <div class="white-key1" data-note="la">
-                                            <div class="note-text">La</div>
-                                            <div class="black-key1" data-note="la#"></div>
-                                        </div>
-                                        <div class="white-key1" data-note="si">
-                                            <div class="note-text">Si</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-center" id="feedback"></div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li id="jeux-content" style="display: none;">
-                            <ul>
-                                <!-- Contenu pour la section "Jeux" à ajouter ici -->
-                                <li>
-                                    <div class="memory-game">
-                                        <h1>Jeux de Mémoire</h1>
-                                        <div class="cards">
-                                            <!-- Cartes générées par JavaScript -->
-                                        </div>
-                                        <div id="score">Score: 0</div>
-                                        <div id="stats">
-                                            <h2>Statistiques</h2>
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Bonnes tentatives</th>
-                                                        <th>Mauvaises tentatives</th>
-                                                        <th>Temps écoulé (secondes)</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="stats-body">
-                                                    <tr>
-                                                        <td id="correct-attempts">0</td>
-                                                        <td id="wrong-attempts">0</td>
-                                                        <td id="elapsed-time">0</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <div id="result-message" class="alert" style="display: none;"></div>
-                                            <button onclick="restartGame()">Recommencer</button>
-                                        </div>
-                                        <div id="games-history">
-                                            <h2>Historique des parties</h2>
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Bonnes tentatives</th>
-                                                        <th>Mauvaises tentatives</th>
-                                                        <th>Temps écoulé (secondes)</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="history-body">
-                                                    <!-- Lignes générées par JavaScript -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li id="rythme-content" style="display: none;">
-                            <ul>
-                                <!-- Contenu pour la section "Quiz" à ajouter ici -->
-                                <li>
-                                    <br>
-                                    <br>
-                                    <h1 class="text-center">Apprends les Rythmes</h1>
-                                    <div class="piano">
-                                        <div class="key" data-rhythm="ronde">
-                                            <div class="label">Ronde</div>
-                                        </div>
-                                        <div class="key" data-rhythm="blanche">
-                                            <div class="label">Blanche</div>
-                                        </div>
-                                        <div class="key" data-rhythm="noire">
-                                            <div class="label">Noire</div>
-                                        </div>
-                                        <div class="key" data-rhythm="croche">
-                                            <div class="label">Croche</div>
-                                        </div>
-                                        <div class="key" data-rhythm="double-croche">
-                                            <div class="label">Double<br>Croche</div>
-                                        </div>
-                                        <div class="key" data-rhythm="triple-croche">
-                                            <div class="label">Triple<br>Croche</div>
-                                        </div>
-                                        <div class="key" data-rhythm="quadruple-croche">
-                                            <div class="label">Quadruple<br>Croche</div>
-                                        </div>
-                                    </div>
-
-                                    <audio id="audioPlayer"></audio>
-                                </li>
-                            </ul>
-                        </li>
-                        <li id="quiz-content" style="display: none;">
-                            <ul>
-                                <li>
-                                    <div class="quiz">
-                                        <center>
-                                            <button class="btn yellow" type="submit" id="play-quiz">Commencer</button>
-                                        </center>
-                                        <div class="question" id="question">Quelle est cette note ?</div>
-                                        <div class="options" id="options"></div>
-                                        <div id="feedback"></div>
-                                        <div id="score">Score: 0</div>
-                                    </div>
-
-                                    <audio id="audioPlayer"></audio>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const keys = document.querySelectorAll('.piano-key');
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const volumeControl = document.getElementById('volume');
+                            const noteNameElement = document.getElementById('note-name');
+                            const noteDescriptionElement = document.getElementById('note-description');
+                            const staff = document.getElementById('staff');
+                            const noteEmojis = {
+                                'do': '🎶',
+                                'do-sharp': '♯🎶',
+                                're': '🎵',
+                                're-sharp': '♯🎵',
+                                'mi': '🎶',
+                                'fa': '🎵',
+                                'fa-sharp': '♯🎵',
+                                'sol': '🎶',
+                                'sol-sharp': '♯🎶',
+                                'la': '🎶',
+                                'la-sharp': '♯🎶',
+                                'si': '🎶',
+                                'do2': '🎶'
+                            };
+                            const notePositions = {
+                                'do': 100,
+                                'do-sharp': 90,
+                                're': 80,
+                                're-sharp': 70,
+                                'mi': 60,
+                                'fa': 50,
+                                'fa-sharp': 40,
+                                'sol': 30,
+                                'sol-sharp': 20,
+                                'la': 10,
+                                'la-sharp': 5,
+                                'si': 0,
+                                'do2': -10
+                            };
+                
+                            let volume = 0.5;
+                            let noteCount = 0; // Counter to track the number of notes
+                
+                            volumeControl.addEventListener('input', (e) => {
+                                volume = e.target.value / 100;
+                            });
+                
+                            keys.forEach(key => {
+                                key.addEventListener('click', () => {
+                                    const note = key.getAttribute('data-note');
+                                    playSound(note);
+                                    displayNoteInfo(note);
+                                    addNoteToStaff(note);
+                                });
+                            });
+                
+                            document.addEventListener('keydown', (e) => {
+                                const key = e.key.toLowerCase();
+                                const pianoKey = document.querySelector(`.piano-key[data-key="${key}"]`);
+                                if (pianoKey) {
+                                    pianoKey.click();
+                                }
+                            });
+                
+                            function playSound(note) {
+                                const oscillator = audioContext.createOscillator();
+                                const gainNode = audioContext.createGain();
+                
+                                oscillator.type = 'sine';
+                                oscillator.frequency.setValueAtTime(getFrequency(note), audioContext.currentTime);
+                                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                
+                                oscillator.connect(gainNode);
+                                gainNode.connect(audioContext.destination);
+                
+                                oscillator.start();
+                                oscillator.stop(audioContext.currentTime + 1);
+                            }
+                
+                            function getFrequency(note) {
+                                const notes = {
+                                    'do': 261.63,
+                                    'do-sharp': 277.18,
+                                    're': 293.66,
+                                    're-sharp': 311.13,
+                                    'mi': 329.63,
+                                    'fa': 349.23,
+                                    'fa-sharp': 369.99,
+                                    'sol': 392.00,
+                                    'sol-sharp': 415.30,
+                                    'la': 440.00,
+                                    'la-sharp': 466.16,
+                                    'si': 493.88,
+                                    'do2': 523.25
+                                };
+                                return notes[note];
+                            }
+                
+                            function displayNoteInfo(note) {
+                                const noteInfo = {
+                                    'do': { name: 'Do', description: 'La touche Do est une note fondamentale très utilisée en musique.' },
+                                    'do-sharp': { name: 'Do#', description: 'Note C#' },
+                                    're': { name: 'Ré', description: 'C\'est la seconde note de la gamme, après Do.' },
+                                    're-sharp': { name: 'Ré#', description: 'Ré dièse (ou Mi bémol) est une autre touche noire sur un piano.' },
+                                    'mi': { name: 'Mi', description: 'C\'est la troisième note de la gamme, après Ré.' },
+                                    'fa': { name: 'Fa', description: 'C\'est la quatrième note de la gamme, après Mi.' },
+                                    'fa-sharp': { name: 'Fa#', description: 'Fa dièse (ou Sol bémol) est une note modifiée souvent utilisée pour changer de tonalité.' },
+                                    'sol': { name: 'Sol', description: 'C\'est une note souvent utilisée comme tonique.' },
+                                    'sol-sharp': { name: 'Sol#', description: 'Sol dièse (ou La bémol) est une note modifiée qui complète souvent une progression musicale.' },
+                                    'la': { name: 'La', description: 'C\'est une note harmonique dans de nombreux accords.' },
+                                    'la-sharp': { name: 'La#', description: 'La dièse (ou Si bémol) est une note modifiée utilisée pour enrichir l\'harmonie musicale.' },
+                                    'si': { name: 'Si', description: 'C\'est une note souvent utilisée pour compléter une tonalité.' },
+                                    'do2': { name: 'Do (octave supérieur)', description: 'Note C (Octave élevée)' }
+                                };
+                
+                                const selectedNote = noteInfo[note];
+                                noteNameElement.textContent = selectedNote.name;
+                                noteDescriptionElement.textContent = selectedNote.description;
+                            }
+                
+                            function addNoteToStaff(note) {
+                                const noteElement = document.createElement('div');
+                                noteElement.className = 'note';
+                                noteElement.style.top = `${notePositions[note]}px`;
+                                noteElement.style.left = `${noteCount * 30}px`; // Adjust the horizontal position based on noteCount
+                                noteElement.textContent = noteEmojis[note];
+                                staff.appendChild(noteElement);
+                
+                                noteCount++;
+                
+                                setTimeout(() => {
+                                    //staff.removeChild(noteElement);
+                                }, 1000);
+                            }
+                        });
+                    </script>
                 </section>
             </div>
         </div>
@@ -622,512 +352,6 @@
     <script type="text/javascript" src="js/imagesloaded.pkgd.min.js"></script>
     <script type="text/javascript" src="js/isotope.pkgd.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
-
-    <script>
-        const notePositions = {
-            'do': 80,
-            'do#': 75,
-            're': 70,
-            're#': 65,
-            'mi': 60,
-            'fa': 55,
-            'fa#': 50,
-            'sol': 45,
-            'sol#': 40,
-            'la': 35,
-            'la#': 30,
-            'si': 25
-        };
-
-        const noteEmojis = {
-            'do': '🎶',
-            'do#': '♯',
-            're': '🎵',
-            're#': '♯',
-            'mi': '🎶',
-            'fa': '🎵',
-            'fa#': '♯',
-            'sol': '🎶',
-            'sol#': '♯',
-            'la': '🎵',
-            'la#': '♯',
-            'si': '🎶'
-        };
-
-        document.querySelectorAll('.white-key, .black-key').forEach(key => {
-            key.addEventListener('click', () => {
-                const noteName = key.getAttribute('data-note');
-                new Audio(`audio/${noteName}.mp3`).play();
-                addNoteToStaff(noteName);
-                updateNoteInfo(noteName);
-                simulateAIResponse(noteName);
-            });
-        });
-
-        function updateNoteInfo(note) {
-            const noteInfo = document.getElementById('noteInfo');
-            const noteName = note.toUpperCase(); // Convertir en majuscule
-            const noteDescription = getAIResponse(note);
-            noteInfo.querySelector('h2').innerText = noteName;
-            noteInfo.querySelector('p').innerText = noteDescription;
-        }
-
-        function addNoteToStaff(note) {
-            const staff = document.getElementById('staff');
-            const noteElement = document.createElement('div');
-            noteElement.className = 'note';
-            noteElement.innerHTML = noteEmojis[note];
-            noteElement.style.bottom = notePositions[note] + 'px';
-            noteElement.style.left = (staff.children.length * 20) + 'px';
-            staff.appendChild(noteElement);
-        }
-
-        function simulateAIResponse(selectedNote) {
-            // Simulation d'une réponse de l'IA
-            const aiResponse = getAIResponse(selectedNote);
-            setTimeout(() => {
-            }, 1000); // Délai de simulation d'une réponse
-        }
-
-        function getAIResponse(note) {
-            // Simulation simple de la réponse de l'IA
-            const responses = {
-                'do': "La touche Do est une note fondamentale très utilisée en musique.",
-                're': "C'est la seconde note de la gamme, après Do.",
-                'mi': "C'est la troisième note de la gamme, après Ré.",
-                'fa': "C'est la quatrième note de la gamme, après Mi.",
-                'sol': "C'est une note souvent utilisée comme tonique.",
-                'la': "C'est une note harmonique dans de nombreux accords.",
-                'si': "C'est une note souvent utilisée pour compléter une tonalité.",
-                'do#': "Do dièse (ou Ré bémol) est la même touche qu'une touche noire sur un piano.",
-                're#': "Ré dièse (ou Mi bémol) est une autre touche noire sur un piano.",
-                'fa#': "Fa dièse (ou Sol bémol) est une note modifiée souvent utilisée pour changer de tonalité.",
-                'sol#': "Sol dièse (ou La bémol) est une note modifiée qui complète souvent une progression musicale.",
-                'la#': "La dièse (ou Si bémol) est une note modifiée utilisée pour enrichir l'harmonie musicale."
-            };
-            return responses[note] || "Je ne suis pas sûr de cette note...";
-        }
-    </script>
-
-    <script>
-        document.querySelectorAll('.white-key, .black-key').forEach(key => {
-            key.addEventListener('click', () => {
-                const noteName = key.getAttribute('data-note');
-                new Audio(`audio/${noteName}.mp3`).play();
-                simulateAIResponse(noteName);
-            });
-        });
-
-        function simulateAIResponse(selectedNote) {
-            // Simulation d'une réponse de l'IA
-            const aiResponse = getAIResponse(selectedNote);
-        }
-
-        function getAIResponse(note) {
-            // Simulation simple de la réponse de l'IA
-            const responses = {
-                'do': "La touche Do est une note fondamentale très utilisée en musique.",
-                're': "La touche Ré C'est la seconde note de la gamme, après la touche Do.",
-                'mi': "La touche Mi C'est la troisième note de la gamme, après la touche Ré.",
-                'fa': "La touche Fa C'est la quatrième note de la gamme, après la touche Mi.",
-                'sol': "La touche Sol C'est une note souvent utilisée comme tonique.",
-                'la': "La touche La C'est une note harmonique dans de nombreux accords.",
-                'si': "La touche Si C'est une note souvent utilisée pour compléter une tonalité.",
-            };
-            return responses[note] || "Je ne suis pas sûr de cette note...";
-        }
-    </script>
-
-
-
-
-    <script>
-        let storedNom;
-        let storedPrenom;
-        let storedDateNaissance;
-        let performanceTable = [];
-
-        $(document).ready(function () {
-            fetchProfile();
-            loadPerformance();
-        });
-
-        function fetchProfile() {
-            storedNom = localStorage.getItem('nom') || '';
-            storedPrenom = localStorage.getItem('prenom') || '';
-            storedDateNaissance = localStorage.getItem('dateNaissance') || '';
-        }
-
-        const notes = ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
-        let sequence = [];
-
-        document.getElementById('play-sequence').addEventListener('click', () => {
-            generateSequence();
-            playSequence(sequence);
-        });
-
-        function generateSequence() {
-            sequence = [];
-            for (let i = 0; i < 3; i++) { // Génère une séquence de 4 notes
-                const randomIndex = Math.floor(Math.random() * notes.length);
-                sequence.push(notes[randomIndex]);
-            }
-        }
-
-        function playSequence(sequence) {
-            sequence.forEach((note, index) => {
-                setTimeout(() => {
-                    soundNotePlaying(note);
-                }, index * 1000);
-                setTimeout(() => {
-                    Swal.fire({
-                        title: 'Exécution Séquence!',
-                        html: `Hey mon amis ${storedNom} ${storedPrenom}, c'est à toi maintenant. Exécute la séquence qui vient d'être jouée.`,
-                        confirmButtonText: 'Continuer'
-                    });
-                }, 3500);
-            });
-        }
-
-        function soundNotePlaying(note) {
-            new Audio(`audio/${note}.mp3`).play();
-        }
-
-        document.querySelectorAll('.white-key1, .black-key1').forEach(key => {
-            key.addEventListener('click', () => {
-                const selectedNote = key.getAttribute('data-note');
-                soundNotePlaying(selectedNote);
-                checkAnswer(selectedNote);
-            });
-        });
-
-        function checkAnswer(selectedNote) {
-            if (selectedNote === sequence[0]) {
-                document.getElementById('feedback').innerText = "Correct!";
-                performanceTable.push({ sequence: sequence, success: true });
-            } else {
-                document.getElementById('feedback').innerText = "Incorrect, essaie encore!";
-                performanceTable.push({ sequence: sequence, success: false });
-            }
-            savePerformance();
-        }
-
-        function savePerformance() {
-            localStorage.setItem('performance', JSON.stringify(performanceTable));
-        }
-
-        function loadPerformance() {
-            const savedPerformance = localStorage.getItem('performance');
-            performanceTable = savedPerformance ? JSON.parse(savedPerformance) : [];
-        }
-    </script>
-
-
-
-
-
-
-
-
-    <script>
-        const moteses = ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'];
-        const cards = [...moteses, ...moteses]; // Doubler les cartes pour le jeu de mémoire
-        cards.sort(() => 0.5 - Math.random());
-
-        const cardsContainer = document.querySelector('.cards');
-        let firstCard, secondCard;
-        let score = 0;
-        let correctAttempts = 0;
-        let wrongAttempts = 0;
-        let startTime, endTime;
-        let gamesHistory = JSON.parse(localStorage.getItem('gamesHistory')) || [];
-        let gamesPourcent = JSON.parse(localStorage.getItem('gamesPourcent')) || [];
-
-        cards.forEach(note => {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.note = note;
-
-            const cardInner = document.createElement('div');
-            cardInner.classList.add('card-inner');
-
-            const cardFront = document.createElement('div');
-            cardFront.classList.add('card-front');
-
-            const cardBack = document.createElement('div');
-            cardBack.classList.add('card-back');
-            cardBack.innerText = note.toUpperCase();
-
-            cardInner.appendChild(cardFront);
-            cardInner.appendChild(cardBack);
-            card.appendChild(cardInner);
-            card.addEventListener('click', flipCard);
-            cardsContainer.appendChild(card);
-        });
-
-        function flipCard() {
-            if (this.classList.contains('flipped') || secondCard) return;
-            this.classList.add('flipped');
-            if (!firstCard) {
-                firstCard = this;
-            } else {
-                secondCard = this;
-                checkForMatch();
-            }
-        }
-
-        function checkForMatch() {
-            if (firstCard.dataset.note === secondCard.dataset.note) {
-                score += 10;
-                correctAttempts++;
-                document.getElementById('score').innerText = `Score: ${score}`;
-                setTimeout(() => {
-                    firstCard.remove();
-                    secondCard.remove();
-                    resetCards();
-                    checkGameEnd();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    firstCard.classList.remove('flipped');
-                    secondCard.classList.remove('flipped');
-                    wrongAttempts++;
-                    document.getElementById('wrong-attempts').innerText = wrongAttempts;
-                    resetCards();
-                }, 1000);
-            }
-        }
-
-        function resetCards() {
-            firstCard = null;
-            secondCard = null;
-        }
-
-        function checkGameEnd() {
-            if (document.querySelectorAll('.card').length === 0) {
-                endTime = new Date();
-                const elapsedTime = Math.floor((endTime - startTime) / 1000);
-                document.getElementById('elapsed-time').innerText = elapsedTime;
-
-                const statsBody = document.getElementById('stats-body');
-                statsBody.innerHTML = `
-                    <tr>
-                        <td>${correctAttempts}</td>
-                        <td>${wrongAttempts}</td>
-                        <td>${elapsedTime}</td>
-                    </tr>
-                `;
-
-                const resultMessage = document.getElementById('result-message');
-                if (wrongAttempts === 0) {
-                    resultMessage.style.display = 'block';
-                    resultMessage.innerText = 'Félicitations ! Aucune erreur !';
-                } else {
-                    const successRate = (correctAttempts / (correctAttempts + wrongAttempts)) * 100;
-                    if (successRate > 70) {
-                        resultMessage.style.display = 'block';
-                        resultMessage.innerText = `Bien joué ! Votre taux de réussite est de ${successRate.toFixed(2)}%.`;
-                    } else {
-                        resultMessage.style.display = 'block';
-                        resultMessage.innerText = `Vous pouvez mieux faire ! Votre taux de réussite est de ${successRate.toFixed(2)}%.`;
-                    }
-                }
-
-                // Ajouter les informations de la partie à l'historique
-                const gameInfo = {
-                    date: new Date().toLocaleString(),
-                    correctAttempts: correctAttempts,
-                    wrongAttempts: wrongAttempts,
-                    elapsedTime: elapsedTime
-                };
-                const game = {
-                    pourcent: successRate.toFixed(2)
-                }
-                gamesHistory.push(gameInfo);
-                gamesPourcent.push(game)
-                localStorage.setItem('gamesHistory', JSON.stringify(gamesHistory));
-                localStorage.setItem('gamesPourcent', JSON.stringify(gamesPourcent));
-
-                // Mettre à jour l'affichage de l'historique
-                updateHistoryTable();
-
-                // Afficher les tableaux stats et historique
-                document.getElementById('stats').classList.add('show');
-                document.getElementById('games-history').classList.add('show');
-            }
-        }
-
-        function updateHistoryTable() {
-            const historyBody = document.getElementById('history-body');
-            historyBody.innerHTML = '';
-            gamesHistory.forEach(game => {
-                historyBody.innerHTML += `
-                    <tr>
-                        <td>${game.date}</td>
-                        <td>${game.correctAttempts}</td>
-                        <td>${game.wrongAttempts}</td>
-                        <td>${game.elapsedTime}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function restartGame() {
-            // Réinitialiser les variables
-            score = 0;
-            correctAttempts = 0;
-            wrongAttempts = 0;
-            startTime = null;
-            endTime = null;
-
-            // Réinitialiser l'affichage
-            document.getElementById('score').innerText = 'Score: 0';
-            document.querySelectorAll('.card').forEach(card => card.remove());
-            document.getElementById('stats').classList.remove('show');
-            document.getElementById('games-history').classList.remove('show');
-
-            // Générer de nouvelles cartes
-            cards.sort(() => 0.5 - Math.random());
-            cards.forEach(note => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.note = note;
-
-                const cardInner = document.createElement('div');
-                cardInner.classList.add('card-inner');
-
-                const cardFront = document.createElement('div');
-                cardFront.classList.add('card-front');
-
-                const cardBack = document.createElement('div');
-                cardBack.classList.add('card-back');
-                cardBack.innerText = note.toUpperCase();
-
-                cardInner.appendChild(cardFront);
-                cardInner.appendChild(cardBack);
-                card.appendChild(cardInner);
-                card.addEventListener('click', flipCard);
-                cardsContainer.appendChild(card);
-            });
-
-            // Réinitialiser l'historique et le message de résultat
-            document.getElementById('result-message').style.display = 'none';
-            document.getElementById('wrong-attempts').innerText = '0';
-
-            // Mettre à jour l'historique visible
-            updateHistoryTable();
-        }
-
-        // Charger l'historique au chargement de la page
-        updateHistoryTable();
-    </script>
-
-
-
-
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const notes = ['do', 'ré', 'mi', 'fa', 'sol', 'la', 'si'];
-            const totalQuestions = 10;
-            let questionCount = 0;
-            let correctAnswer = '';
-            let sessions = JSON.parse(localStorage.getItem('quizSessions')) || [];
-            let score = 0;
-
-            const playQuizButton = document.getElementById('play-quiz');
-            playQuizButton.addEventListener('click', () => {
-                loadPlayed();
-            });
-
-            function loadPlayed() {
-                Swal.fire({
-                    title: 'Commencer le quiz ?',
-                    text: `Hey mon amis ${storedNom} ${storedPrenom}, es tu prêt à écouter la note et répondre à la question ?`,
-                    showCancelButton: true,
-                    confirmButtonText: 'Continuer',
-                    cancelButtonText: 'Annuler'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        generateQuestion();
-                    }
-                });
-            }
-
-            function generateQuestion() {
-                if (questionCount < totalQuestions) {
-                    questionCount++;
-                    const questionNote = notes[Math.floor(Math.random() * notes.length)];
-                    correctAnswer = questionNote;
-
-                    document.getElementById('question').innerText = `Quelle est cette note ?`;
-                    const audio = new Audio(`audio/${questionNote}.mp3`);
-                    audio.play();
-
-                    displayOptions();
-                } else {
-                    finishQuiz();
-                }
-            }
-
-            function displayOptions() {
-                const optionsContainer = document.getElementById('options');
-                optionsContainer.innerHTML = '';
-                const shuffledNotes = [...notes].sort(() => 0.5 - Math.random());
-
-                shuffledNotes.forEach(note => {
-                    const button = document.createElement('button');
-                    button.classList.add('option');
-                    button.setAttribute('data-answer', note);
-                    button.innerText = note.charAt(0).toUpperCase() + note.slice(1);
-                    button.addEventListener('click', checkAnswer);
-                    optionsContainer.appendChild(button);
-                });
-            }
-
-            function checkAnswer(event) {
-                const selectedAnswer = event.target.getAttribute('data-answer');
-                const feedback = document.getElementById('feedback');
-                if (selectedAnswer === correctAnswer) {
-                    feedback.innerText = "Correct!";
-                    feedback.style.color = '#28a745'; // Vert pour la bonne réponse
-                    score++;
-                    document.getElementById('score').innerText = `Score: ${score}`;
-                    recordSession(true);
-                } else {
-                    feedback.innerText = `Incorrect, la réponse correcte est ${correctAnswer.toUpperCase()}`;
-                    feedback.style.color = '#dc3545'; // Rouge pour la mauvaise réponse
-                    recordSession(false);
-                }
-                setTimeout(() => {
-                    feedback.innerText = '';
-                    generateQuestion();
-                }, 1500);
-            }
-
-            function recordSession(isCorrect) {
-                sessions.push({
-                    date: new Date().toLocaleString(),
-                    correct: isCorrect ? 'Oui' : 'Non'
-                });
-                localStorage.setItem('quizSessions', JSON.stringify(sessions));
-            }
-
-            function finishQuiz() {
-                Swal.fire({
-                    title: 'Quiz terminé',
-                    html: `Votre score final est de ${score} sur ${totalQuestions}`,
-                }).then(() => {
-                    // Réinitialiser les variables pour une nouvelle session
-                    questionCount = 0;
-                    score = 0;
-                    document.getElementById('score').innerText = 'Score: 0';
-                    generateQuestion();
-                });
-            }
-        });
-    </script>
 
 
 </body>
